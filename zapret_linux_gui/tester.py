@@ -62,6 +62,11 @@ class Outcome:
         return [r.domain for r in self.results if not r.ok]
 
 
+# %{...} — это формат curl, а не Python. Держим его в обычной строке и никогда не
+# собираем адрес f-строкой: фигурные скобки тут слишком легко перепутать.
+CURL_WRITE_OUT = "%{http_code} %{time_total}"
+
+
 def probe(domain: str, timeout: int) -> ProbeResult:
     """Одна проба через curl.
 
@@ -70,6 +75,8 @@ def probe(domain: str, timeout: int) -> ProbeResult:
     """
     if shutil.which("curl") is None:
         return ProbeResult(domain, False, None, "не найден curl")
+
+    url = "https://" + domain + "/"
 
     command = [
         "curl",
@@ -80,8 +87,8 @@ def probe(domain: str, timeout: int) -> ProbeResult:
         "--max-time",
         str(timeout),
         "--write-out",
-        "%{http_code} %{time_total}",
-        f"https://{domain}/",
+        CURL_WRITE_OUT,
+        url,
     ]
 
     started = time.monotonic()
