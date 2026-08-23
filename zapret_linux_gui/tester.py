@@ -2,9 +2,6 @@
 
 Логика та же, что в StrategyTester на Windows: последовательно включаем каждую стратегию,
 дёргаем несколько заведомо блокируемых доменов, считаем успешные ответы и задержку.
-
-Перед прогоном есть базовая проба без обхода: если всё и так открывается, тест
-бессмыслен — любая стратегия покажет 100% и выбор будет случайным.
 """
 
 from __future__ import annotations
@@ -75,15 +72,23 @@ def probe(domain: str, timeout: int) -> ProbeResult:
         return ProbeResult(domain, False, None, "не найден curl")
 
     command = [
-        "curl", "--silent", "--show-error", "--output", "/dev/null",
-        "--max-time", str(timeout),
-        "--write-out", "%{http_code} %{time_total}",
+        "curl",
+        "--silent",
+        "--show-error",
+        "--output",
+        "/dev/null",
+        "--max-time",
+        str(timeout),
+        "--write-out",
+        "%{http_code} %{time_total}",
         f"https://{domain}/",
     ]
 
     started = time.monotonic()
     try:
-        result = subprocess.run(command, capture_output=True, text=True, timeout=timeout + 3, check=False)
+        result = subprocess.run(
+            command, capture_output=True, text=True, timeout=timeout + 3, check=False
+        )
     except subprocess.TimeoutExpired:
         return ProbeResult(domain, False, None, "таймаут")
     except OSError as exc:
@@ -93,7 +98,9 @@ def probe(domain: str, timeout: int) -> ProbeResult:
 
     if result.returncode != 0:
         detail = (result.stderr or "").strip().splitlines()
-        return ProbeResult(domain, False, None, detail[-1] if detail else f"curl {result.returncode}")
+        return ProbeResult(
+            domain, False, None, detail[-1] if detail else f"curl {result.returncode}"
+        )
 
     parts = (result.stdout or "").split()
     code = parts[0] if parts else "?"
@@ -113,8 +120,10 @@ class Tester:
         self.last_best: Strategy | None = None
 
     def baseline(self) -> Outcome:
-        """Проба без обхода."""
-        runner.stop() if runner.is_running else None
+        """Проба без обхода: если всё и так открывается, тест бессмыслен —
+        любая стратегия покажет 100% и выбор будет случайным."""
+        if runner.is_running:
+            runner.stop()
         results = [probe(d, settings.probe_timeout) for d in settings.test_domains]
         return Outcome(strategy=None, results=results)
 
@@ -170,6 +179,7 @@ class Tester:
             settings.save()
             log.success(f"Лучшая стратегия: {best.strategy.name} ({best.summary})")
         else:
+            self.last_best = None
             log.warn("Ни одна стратегия не сработала")
 
         return outcomes

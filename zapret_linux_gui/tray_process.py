@@ -12,9 +12,13 @@ gi сразу ругается, а если обойти проверку — п
 
 from __future__ import annotations
 
+import importlib
 import json
 import sys
 import threading
+
+# Ayatana — активно поддерживаемый форк; AppIndicator3 остался в старых дистрибутивах.
+INDICATOR_CANDIDATES = (("AyatanaAppIndicator3", "0.1"), ("AppIndicator3", "0.1"))
 
 
 def emit(line: str) -> None:
@@ -22,35 +26,36 @@ def emit(line: str) -> None:
     sys.stdout.flush()
 
 
+def load_indicator():
+    """Возвращает (модуль индикатора, Gtk, GLib) или возбуждает ImportError."""
+    import gi
+
+    gi.require_version("Gtk", "3.0")
+
+    indicator_name = None
+    for name, version in INDICATOR_CANDIDATES:
+        try:
+            gi.require_version(name, version)
+        except ValueError:
+            continue
+        indicator_name = name
+        break
+
+    if indicator_name is None:
+        raise ImportError("не найден AyatanaAppIndicator3")
+
+    indicator = importlib.import_module(f"gi.repository.{indicator_name}")
+    gtk = importlib.import_module("gi.repository.Gtk")
+    glib = importlib.import_module("gi.repository.GLib")
+    return indicator, gtk, glib
+
+
 def main() -> int:
     try:
-        import gi
-
-        gi.require_version("Gtk", "3.0")
-
-        # Ayatana — активно поддерживаемый форк; AppIndicator3 остался в старых дистрибутивах.
-        indicator_module = None
-        for name, version in (("AyatanaAppIndicator3", "0.1"), ("AppIndicator3", "0.1")):
-            try:
-                gi.require_version(name, version)
-                indicator_module = name
-                break
-            except ValueError:
-                continue
-
-        if indicator_module is None:
-            emit("unavailable: не найден AyatanaAppIndicator3")
-            return 0
-
-        from gi.repository import GLib, Gtk
-        from gi.repository import __getattr__ as _  # noqa: F401 - только для ясности
-
-        indicator_lib = __import__(f"gi.repository.{indicator_module}", fromlist=[indicator_module])
+        AppIndicator, Gtk, GLib = load_indicator()
     except (ImportError, ValueError) as exc:
         emit(f"unavailable: {exc}")
         return 0
-
-    AppIndicator = indicator_lib
 
     indicator = AppIndicator.Indicator.new(
         "io.github.talex00.ZapretLinuxGui",
@@ -58,7 +63,8 @@ def main() -> int:
         AppIndicator.IndicatorCategory.SYSTEM_SERVICES,
     )
     indicator.set_status(AppIndicator.IndicatorStatus.ACTIVE)
-    # Если своя иконка ещё не установлена в тему, пусть будет системная, а не пустота.
+    # Если своя иконка ещё не попала в тему (запуск из исходников), пусть будет
+    # системная, а не пустое место.
     indicator.set_icon_full("network-vpn-symbolic", "Zapret Linux GUI")
 
     menu = Gtk.Menu()
@@ -106,9 +112,8 @@ def main() -> int:
                 payload = json.loads(line)
             except ValueError:
                 continue
-            GLib.idle_add(
-                apply_state, bool(payload.get("running")), payload.get("strategy")
-            )
+            GLib.idle_add(apply_state, bool(payload.get("running")), payload.get("strategy"))
+
         # Основной процесс завершился — иконка больше не нужна.
         GLib.idle_add(Gtk.main_quit)
 
