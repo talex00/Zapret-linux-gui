@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Zapret Linux GUI
+Name[ru]=Zapret Linux GUI
+Comment=DPI bypass control for zapret (nfqws)
+Comment[ru]=Управление обходом блокировок zapret (nfqws)
+Exec=zapret-linux-gui
+Icon=io.github.talex00.ZapretLinuxGui
+Terminal=false
+Categories=Network;Utility;
+Keywords=zapret;nfqws;dpi;bypass;
+StartupNotify=true

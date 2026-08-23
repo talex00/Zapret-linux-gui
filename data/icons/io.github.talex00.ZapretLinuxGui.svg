@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="100" height="120">
+  <!--
+    Геометрия повторяет логотип Windows-версии: щит с львиной маской.
+    Под ртом лежит тёмный ореол: без него рот сливался с носом на малых размерах.
+  -->
+  <defs>
+    <linearGradient id="shield" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2E62B4" />
+      <stop offset="1" stop-color="#10306B" />
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFD84E" />
+      <stop offset="1" stop-color="#F0A81E" />
+    </linearGradient>
+  </defs>
+
+  <path d="M50 3 C 78 3 95 20 95 47 C 95 85 74 108 50 118 C 26 108 5 85 5 47 C 5 20 22 3 50 3 Z"
+        fill="url(#shield)" stroke="#12224A" stroke-width="6" stroke-linejoin="round" />
+
+  <path d="M50 22 C 68 20 82 33 84 52 C 86 72 72 90 50 101 C 28 90 14 72 16 52 C 18 33 32 20 50 22 Z"
+        fill="none" stroke="url(#gold)" stroke-width="4" stroke-linejoin="round" />
+
+  <path d="M50 36 C 63 36 71 46 71 58 C 71 72 62 84 50 91 C 38 84 29 72 29 58 C 29 46 37 36 50 36 Z"
+        fill="none" stroke="url(#gold)" stroke-width="5" stroke-linejoin="round" />
+
+  <path d="M38 53 C 41 48 47 50 46 55 C 44 59 38 58 38 53 Z" fill="url(#gold)" />
+  <path d="M62 53 C 59 48 53 50 54 55 C 56 59 62 58 62 53 Z" fill="url(#gold)" />
+
+  <path d="M50 60 L 56 68 L 50 72 L 44 68 Z" fill="url(#gold)" />
+
+  <path d="M39 80 C 44 89 56 89 61 80" fill="none" stroke="#14336F" stroke-width="9" stroke-linecap="round" />
+  <path d="M39 80 C 44 89 56 89 61 80" fill="none" stroke="url(#gold)" stroke-width="4" stroke-linecap="round" />
+</svg>

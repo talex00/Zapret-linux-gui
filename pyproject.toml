@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zapret-linux-gui"
+version = "0.1.0"
+description = "GTK4/libadwaita GUI for zapret (nfqws + nftables) on Linux"
+readme = "README.md"
+requires-python = ">=3.11"
+
+# PyGObject сознательно не в dependencies: его ставят системным пакетом вместе с
+# GTK4 и libadwaita. Сборка из pip требует толпы -dev пакетов и часто ломается.
+dependencies = []
+
+[project.scripts]
+zapret-linux-gui = "zapret_linux_gui.__main__:main"
+
+[tool.setuptools]
+packages = ["zapret_linux_gui", "zapret_linux_gui.ui"]

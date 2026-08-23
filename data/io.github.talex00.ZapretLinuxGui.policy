@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
+<policyconfig>
+  <vendor>Zapret Linux GUI</vendor>
+  <vendor_url>https://github.com/talex00/Zapret-linux-gui</vendor_url>
+
+  <!--
+    Без этого файла pkexec тоже работает, но спрашивает пароль безымянно
+    («требуется аутентификация для запуска python3»). Политика даёт внятный текст
+    и разрешает держать авторизацию в течение сеанса, чтобы прогон автоподбора
+    не спрашивал пароль на каждую стратегию.
+  -->
+  <action id="io.github.talex00.zapretlinuxgui.helper">
+    <description>Control zapret DPI bypass</description>
+    <description xml:lang="ru">Управление обходом блокировок zapret</description>
+    <message>Authentication is required to change DPI bypass rules</message>
+    <message xml:lang="ru">Для изменения правил обхода требуется аутентификация</message>
+    <icon_name>io.github.talex00.ZapretLinuxGui</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/local/lib/zapret-linux-gui/zapret_linux_gui/privileged_helper.py</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+</policyconfig>
