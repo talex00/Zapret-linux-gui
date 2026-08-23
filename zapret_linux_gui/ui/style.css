@@ -1,0 +1,21 @@
+/* Минимум своего CSS: всё остальное берётся из libadwaita, чтобы приложение не
+   выглядело чужим при смене темы или акцентного цвета. */
+
+.state-running {
+  font-weight: bold;
+  color: @success_color;
+}
+
+.state-stopped {
+  opacity: 0.7;
+}
+
+.state-error {
+  font-weight: bold;
+  color: @error_color;
+}
+
+.log-view {
+  font-family: monospace;
+  font-size: 0.9em;
+}
